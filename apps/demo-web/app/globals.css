@@ -18,7 +18,8 @@
 @layer components {
   .btn-primary {
     @apply bg-brand-primary text-white rounded-button px-6 py-3 font-medium
-           active:scale-[0.98] transition-transform duration-150;
+           active:scale-[0.98] transition-all duration-150
+           hover:shadow-glow hover:bg-brand-primary-dark;
   }
   .card-base {
     @apply bg-white rounded-card shadow-sm border border-gray-100;
@@ -28,5 +29,13 @@
   }
   .health-fail {
     @apply text-risk-red bg-red-50 px-2 py-0.5 rounded text-tag font-medium;
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-card;
+  }
+
+  .skeleton {
+    @apply bg-gray-200 animate-pulse rounded-lg;
   }
 }
