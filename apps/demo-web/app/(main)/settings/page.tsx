@@ -1,26 +1,92 @@
+'use client'
+
+import { useEffect } from 'react'
+import dynamic from 'next/dynamic'
+import { useSettingsStore } from '@/lib/store/settingsStore'
+
+const PreferenceSliders = dynamic(() => import('@/components/settings/PreferenceSliders'), { ssr: false })
+
 export default function SettingsPage() {
+  const { settings, updateBackgroundPrompt, toggleMemory, togglePrivacy, fetchSettings, saveSettings, loading } =
+    useSettingsStore()
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
   return (
     <div className="flex flex-col min-h-screen p-4">
       <h1 className="text-title font-bold mt-4 mb-6">⚙️ 设置 / Memory Control</h1>
+
       <section className="mb-6">
         <h2 className="text-body font-semibold mb-2">👤 我的出行背景</h2>
-        <div className="bg-white rounded-card shadow-sm border border-gray-100 p-4 text-sm text-gray-500">
-          我喜欢小众、人少的地方...
-        </div>
+        <textarea
+          className="w-full bg-white rounded-card shadow-sm border border-gray-100 p-4 text-sm text-gray-700
+                     resize-none h-20 outline-none focus:ring-2 focus:ring-brand-primary/20"
+          value={settings.backgroundPrompt}
+          onChange={(e) => updateBackgroundPrompt(e.target.value)}
+          onBlur={() => saveSettings()}
+          placeholder="我喜欢小众、人少的地方..."
+        />
       </section>
+
       <section className="mb-6">
-        <h2 className="text-body font-semibold mb-2">🎚️ 偏好权重</h2>
+        <h2 className="text-body font-semibold mb-2">🧠 Memory 开关</h2>
         <div className="bg-white rounded-card shadow-sm border border-gray-100 p-4 space-y-3">
-          {['美食', '博物馆', '少步行', '小众'].map((pref) => (
-            <div key={pref} className="flex items-center gap-3">
-              <span className="text-sm w-16">{pref}</span>
-              <div className="flex-1 h-2 bg-gray-100 rounded-full">
-                <div className="h-full w-3/5 bg-brand-primary rounded-full" />
-              </div>
-            </div>
+          {(['searchHistory', 'tripHistory', 'favorites'] as const).map((key) => (
+            <label key={key} className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">
+                {{ searchHistory: '搜索历史', tripHistory: '出行记录', favorites: '收藏' }[key]}
+              </span>
+              <button
+                onClick={() => toggleMemory(key)}
+                className={`w-10 h-5 rounded-full transition-colors relative ${
+                  settings.memoryEnabled[key] ? 'bg-brand-primary' : 'bg-gray-200'
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform absolute top-0.5 ${
+                    settings.memoryEnabled[key] ? 'translate-x-[22px]' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </label>
           ))}
         </div>
       </section>
+
+      <section className="mb-6">
+        <h2 className="text-body font-semibold mb-2">🎚️ 偏好权重</h2>
+        <PreferenceSliders />
+      </section>
+
+      <section className="mb-6">
+        <h2 className="text-body font-semibold mb-2">🔒 隐私</h2>
+        <div className="bg-white rounded-card shadow-sm border border-gray-100 p-4">
+          <label className="flex items-center justify-between">
+            <span className="text-sm text-gray-700">隐私模式</span>
+            <button
+              onClick={togglePrivacy}
+              className={`w-10 h-5 rounded-full transition-colors relative ${
+                settings.privacyMode ? 'bg-brand-primary' : 'bg-gray-200'
+              }`}
+            >
+              <div
+                className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform absolute top-0.5 ${
+                  settings.privacyMode ? 'translate-x-[22px]' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </label>
+          <p className="text-xs text-gray-400 mt-1">开启后，搜索历史将不会保存在本地</p>
+        </div>
+      </section>
+
+      {loading && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-4 py-2 rounded-full">
+          保存中...
+        </div>
+      )}
     </div>
   )
 }
