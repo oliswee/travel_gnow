@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { useSettingsStore } from '@/lib/store/settingsStore'
+import ToastContainer from '@/components/shared/Toast'
 
 const PreferenceSliders = dynamic(() => import('@/components/settings/PreferenceSliders'), { ssr: false })
 
@@ -40,13 +41,13 @@ export default function SettingsPage() {
               </span>
               <button
                 onClick={() => toggleMemory(key)}
-                className={`w-10 h-5 rounded-full transition-colors relative ${
+                className={`w-12 h-6 rounded-full transition-colors relative ${
                   settings.memoryEnabled[key] ? 'bg-brand-primary' : 'bg-gray-200'
                 }`}
               >
                 <div
                   className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform absolute top-0.5 ${
-                    settings.memoryEnabled[key] ? 'translate-x-[22px]' : 'translate-x-0.5'
+                    settings.memoryEnabled[key] ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
@@ -67,13 +68,13 @@ export default function SettingsPage() {
             <span className="text-sm text-gray-700">隐私模式</span>
             <button
               onClick={togglePrivacy}
-              className={`w-10 h-5 rounded-full transition-colors relative ${
+              className={`w-12 h-6 rounded-full transition-colors relative ${
                 settings.privacyMode ? 'bg-brand-primary' : 'bg-gray-200'
               }`}
             >
               <div
                 className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform absolute top-0.5 ${
-                  settings.privacyMode ? 'translate-x-[22px]' : 'translate-x-0.5'
+                  settings.privacyMode ? 'translate-x-6' : 'translate-x-0.5'
                 }`}
               />
             </button>
@@ -82,11 +83,7 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      {loading && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-4 py-2 rounded-full">
-          保存中...
-        </div>
-      )}
+      <ToastContainer />
     </div>
   )
 }
