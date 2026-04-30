@@ -7,15 +7,6 @@ import { Loader2 } from 'lucide-react'
 const AMAP_JS_KEY = '7085383572277ee2e81e63ed12241888'
 const AMAP_JS_SECRET = '3ec22ddb9bde31f00c36322609d7f2d1'
 
-declare global {
-  interface Window {
-    _AMapSecurityConfig?: {
-      securityJsCode: string
-    }
-    AMap: any
-  }
-}
-
 export default function RouteMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
@@ -28,13 +19,15 @@ export default function RouteMap() {
 
     async function initMap() {
       try {
-        // Security config must be set BEFORE loading the script
-        window._AMapSecurityConfig = { securityJsCode: AMAP_JS_SECRET }
+        // Set security code BEFORE loading the Gaode script (required for JSAPI v2.0)
+        ;(window as any)._AMapSecurityConfig = {
+          securityJsCode: AMAP_JS_SECRET,
+        }
 
-        // Load Gaode script manually
+        // Use the official Gaode Loader approach
         await new Promise<void>((resolve, reject) => {
           const script = document.createElement('script')
-          script.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_JS_KEY}`
+          script.src = `https://webapi.amap.com/loader.js?key=${AMAP_JS_KEY}`
           script.onload = () => resolve()
           script.onerror = () => reject(new Error('Gaode Maps script failed to load'))
           document.head.appendChild(script)
@@ -42,17 +35,23 @@ export default function RouteMap() {
 
         if (cancelled || !mapRef.current) return
 
-        const AMap = window.AMap
+        // After loader.js loads, window.AMap is available
+        const AMap = (window as any).AMap
         if (!AMap) {
-          setError('AMap not available after script load')
+          setError('AMap global not found after loading')
           return
         }
+
+        AMap.plugin('AMap.Geolocation', () => {
+          // Plugin ready
+        })
 
         const map = new AMap.Map(mapRef.current, {
           zoom: 12,
           center: [120.155, 30.274],
-          mapStyle: 'amap://styles/light',
+          viewMode: '2D' as any,
         })
+
         mapInstance.current = map
         setLoaded(true)
       } catch (e: any) {
@@ -69,11 +68,13 @@ export default function RouteMap() {
 
   // Update markers when queue changes
   useEffect(() => {
-    if (!mapInstance.current || !loaded || !window.AMap) return
+    if (!mapInstance.current || !loaded) return
     const map = mapInstance.current
-    const AMap = window.AMap
+    const AMap = (window as any).AMap
+    if (!AMap) return
 
     map.clearMap?.()
+
     if (queue.length === 0) return
 
     queue.forEach((poi, i) => {
@@ -94,7 +95,7 @@ export default function RouteMap() {
 
   if (error) {
     return (
-      <div className="flex-1 bg-gray-100 flex items-center justify-center">
+      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
         <div className="text-center p-4">
           <p className="text-risk-red text-sm mb-1">地图加载失败</p>
           <p className="text-xs text-gray-400 break-all">{error}</p>
@@ -105,7 +106,7 @@ export default function RouteMap() {
 
   if (!loaded) {
     return (
-      <div className="flex-1 bg-gray-100 flex items-center justify-center">
+      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 size={24} className="animate-spin text-gray-400 mx-auto mb-2" />
           <p className="text-xs text-gray-400">加载地图...</p>
@@ -114,5 +115,10 @@ export default function RouteMap() {
     )
   }
 
-  return <div ref={mapRef} className="flex-1 w-full" />
+  return (
+    <div
+      ref={mapRef}
+      className="absolute inset-0"
+    />
+  )
 }
