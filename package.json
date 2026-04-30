@@ -1,0 +1,14 @@
+{
+  "name": "gonow",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @gonow/demo-web dev",
+    "build": "pnpm --filter @gonow/demo-web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

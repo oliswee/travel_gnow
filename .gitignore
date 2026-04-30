@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+__pycache__/
+*.pyc
+.env.local
+.env
+dist/
+.superpowers/
+*.egg-info/
+.venv/
+.pnpm-store/
+*.tsbuildinfo
+.turbo/
+.pytest_cache/

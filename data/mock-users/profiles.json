@@ -1,0 +1,54 @@
+[
+  {
+    "id": "foodie",
+    "name": "美食党小李",
+    "city": "杭州",
+    "tripCount": 12,
+    "rating": 4.7,
+    "topCategories": [
+      {"name": "美食", "weight": 5},
+      {"name": "夜市", "weight": 4},
+      {"name": "茶馆", "weight": 4},
+      {"name": "博物馆", "weight": 2},
+      {"name": "网红", "weight": 1}
+    ],
+    "historyTrips": [
+      {"id": "ht_001", "city": "杭州", "rating": 5, "date": "2026-03-15", "summary": "西湖美食一日游"},
+      {"id": "ht_002", "city": "杭州", "rating": 4, "date": "2026-02-20", "summary": "龙井品茶半日"}
+    ]
+  },
+  {
+    "id": "museum",
+    "name": "博物馆控小王",
+    "city": "北京",
+    "tripCount": 12,
+    "rating": 4.8,
+    "topCategories": [
+      {"name": "博物馆", "weight": 5},
+      {"name": "历史", "weight": 5},
+      {"name": "艺术", "weight": 4},
+      {"name": "美食", "weight": 2},
+      {"name": "网红", "weight": 1}
+    ],
+    "historyTrips": [
+      {"id": "ht_003", "city": "北京", "rating": 5, "date": "2026-04-01", "summary": "故宫国博深度游"}
+    ]
+  },
+  {
+    "id": "family",
+    "name": "亲子游张姐",
+    "city": "成都",
+    "tripCount": 12,
+    "rating": 4.6,
+    "topCategories": [
+      {"name": "少步行", "weight": 5},
+      {"name": "室内", "weight": 4},
+      {"name": "亲子", "weight": 5},
+      {"name": "美食", "weight": 3},
+      {"name": "博物馆", "weight": 3}
+    ],
+    "historyTrips": [
+      {"id": "ht_004", "city": "成都", "rating": 5, "date": "2026-03-10", "summary": "熊猫基地+科技馆亲子游"}
+    ]
+  }
+]
