@@ -13,7 +13,7 @@ export default function RoutePage() {
   const { queue, addPoi, removePoi, reorderQueue } = useRouteStore()
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-64px)]">
+    <div className="flex flex-col h-full">
       <div className="flex-1 relative overflow-hidden">
         <POIQueue pois={queue} onRemove={removePoi} onReorder={reorderQueue} />
         <RouteMap />

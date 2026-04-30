@@ -11,16 +11,18 @@ const tabs = [
   { href: '/settings', label: '设置', icon: Settings },
 ]
 
+const pillPositions = ['16.67%', '50%', '83.33%']
+
 export default function TabBar() {
   const pathname = usePathname()
   const activeIndex = tabs.findIndex((t) => pathname.startsWith(t.href))
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2">
+    <nav className="relative bg-white/80 backdrop-blur-xl border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2 flex-shrink-0">
       {/* Sliding pill background */}
       <motion.div
-        className="absolute top-2 h-10 w-20 bg-brand-primary/10 rounded-xl"
-        animate={{ x: (activeIndex - 1) * 88 }}
+        className="absolute top-2 h-10 w-20 bg-brand-primary/10 rounded-xl -translate-x-1/2"
+        animate={{ left: pillPositions[activeIndex] }}
         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       />
 

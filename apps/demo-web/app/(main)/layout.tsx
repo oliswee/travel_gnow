@@ -3,9 +3,11 @@ import PageTransition from '@/components/shared/PageTransition'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <PageTransition>{children}</PageTransition>
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <PageTransition>{children}</PageTransition>
+      </div>
       <TabBar />
-    </>
+    </div>
   )
 }
