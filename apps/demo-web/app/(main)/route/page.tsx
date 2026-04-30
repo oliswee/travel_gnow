@@ -13,29 +13,29 @@ export default function RoutePage() {
   const { queue, addPoi, removePoi, reorderQueue } = useRouteStore()
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="absolute inset-0 flex flex-col">
       <div className="flex-1 relative overflow-hidden">
         <POIQueue pois={queue} onRemove={removePoi} onReorder={reorderQueue} />
         <RouteMap />
       </div>
       <div className="flex-shrink-0">
         <BottomSearchBar
-        onSelect={(poi) =>
-          addPoi({
-            id: poi.id,
-            name: poi.name,
-            city: '杭州',
-            category: poi.category,
-            rating: poi.rating,
-            lat: poi.lat,
-            lng: poi.lng,
-            address: poi.address,
-            visitDuration: poi.visit_duration,
-            indoor: false,
-            price: poi.price,
-          } as POI)
-        }
-      />
+          onSelect={(poi) =>
+            addPoi({
+              id: poi.id,
+              name: poi.name,
+              city: '杭州',
+              category: poi.category,
+              rating: poi.rating,
+              lat: poi.lat,
+              lng: poi.lng,
+              address: poi.address,
+              visitDuration: poi.visit_duration,
+              indoor: false,
+              price: poi.price,
+            } as POI)
+          }
+        />
       </div>
     </div>
   )
