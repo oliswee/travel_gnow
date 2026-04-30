@@ -27,7 +27,7 @@ export default function RouteMap() {
         // Use the official Gaode Loader approach
         await new Promise<void>((resolve, reject) => {
           const script = document.createElement('script')
-          script.src = `https://webapi.amap.com/loader.js?key=${AMAP_JS_KEY}`
+          script.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_JS_KEY}`
           script.onload = () => resolve()
           script.onerror = () => reject(new Error('Gaode Maps script failed to load'))
           document.head.appendChild(script)
@@ -42,14 +42,9 @@ export default function RouteMap() {
           return
         }
 
-        AMap.plugin('AMap.Geolocation', () => {
-          // Plugin ready
-        })
-
         const map = new AMap.Map(mapRef.current, {
           zoom: 12,
           center: [120.155, 30.274],
-          viewMode: '2D' as any,
         })
 
         mapInstance.current = map
