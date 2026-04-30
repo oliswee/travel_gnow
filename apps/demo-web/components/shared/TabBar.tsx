@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { MapPin, Compass, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -12,24 +13,43 @@ const tabs = [
 
 export default function TabBar() {
   const pathname = usePathname()
+  const activeIndex = tabs.findIndex((t) => pathname.startsWith(t.href))
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[var(--z-tabbar)]
-                 flex justify-around items-center h-16 pb-2"
-    >
-      {tabs.map((tab) => {
-        const isActive = pathname.startsWith(tab.href)
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2">
+      {/* Sliding pill background */}
+      <motion.div
+        className="absolute top-2 h-10 w-20 bg-brand-primary/10 rounded-xl"
+        animate={{ x: (activeIndex - 1) * 88 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      />
+
+      {tabs.map((tab, i) => {
+        const isActive = i === activeIndex
         const Icon = tab.icon
         return (
           <Link
             key={tab.href}
             href={tab.href}
-            className={`flex flex-col items-center justify-center gap-0.5 w-20 py-1
-                        ${isActive ? 'text-brand-primary' : 'text-gray-400'}`}
+            className="relative flex flex-col items-center justify-center gap-0.5 w-20 py-1 z-10"
           >
-            <Icon size={22} />
-            <span className="text-tag">{tab.label}</span>
+            <motion.div
+              animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -1 : 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            >
+              <Icon
+                size={22}
+                className={isActive ? 'text-brand-primary' : 'text-gray-400'}
+                fill={isActive ? 'currentColor' : 'none'}
+                fillOpacity={isActive ? 0.15 : 0}
+              />
+            </motion.div>
+            <motion.span
+              animate={{ opacity: isActive ? 1 : 0.6, fontWeight: isActive ? 600 : 400 }}
+              className={`text-tag ${isActive ? 'text-brand-primary' : 'text-gray-400'}`}
+            >
+              {tab.label}
+            </motion.span>
           </Link>
         )
       })}
