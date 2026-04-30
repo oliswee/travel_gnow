@@ -11,6 +11,7 @@ const AMAP_JS_SECRET = '3ec22ddb9bde31f00c36322609d7f2d1'
 export default function RouteMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
+  const amapRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -20,7 +21,6 @@ export default function RouteMap() {
     let cancelled = false
     async function initMap() {
       try {
-        // Set security config on window per Gaode JSAPI v2.0 docs
         ;(window as any)._AMapSecurityConfig = {
           securityJsCode: AMAP_JS_SECRET,
         }
@@ -31,13 +31,17 @@ export default function RouteMap() {
         if (cancelled || !mapRef.current) return
         const map = new AMap.Map(mapRef.current, {
           zoom: 12,
-          center: [120.155, 30.274], // Hangzhou center
+          center: [120.155, 30.274],
           mapStyle: 'amap://styles/light',
         })
+        amapRef.current = AMap
         mapInstance.current = map
         setLoaded(true)
       } catch (e: any) {
-        if (!cancelled) setError(e.message || '地图加载失败')
+        if (!cancelled) {
+          console.error('AMap init error:', e)
+          setError(e.message || '地图加载失败')
+        }
       }
     }
     initMap()
@@ -48,29 +52,26 @@ export default function RouteMap() {
   useEffect(() => {
     if (!mapInstance.current || !loaded) return
     const map = mapInstance.current
+    const AMap = amapRef.current
 
-    // Clear existing markers
     markersRef.current.forEach((m: any) => map.remove(m))
     markersRef.current = []
-
     if (queue.length === 0) return
 
-    // Add markers for queued POIs
     queue.forEach((poi, i) => {
-      const marker = new (window as any).AMap.Marker({
+      const marker = new AMap.Marker({
         position: [poi.lng, poi.lat],
         title: poi.name,
         label: {
-          content: `<div class="bg-brand-primary text-white text-xs px-2 py-0.5 rounded-full">${i + 1}</div>`,
+          content: `<div style="background:#3B5BDB;color:#fff;font-size:11px;padding:1px 6px;border-radius:10px">${i + 1}</div>`,
           direction: 'top',
-          offset: [0, -5],
+          offset: new AMap.Pixel(0, -5),
         },
       })
       map.add(marker)
       markersRef.current.push(marker)
     })
 
-    // Fit bounds
     map.setFitView(null, false, [48, 48, 48, 48])
   }, [queue, loaded])
 
