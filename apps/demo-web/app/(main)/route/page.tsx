@@ -1,15 +1,40 @@
+'use client'
+
+import dynamic from 'next/dynamic'
+import BottomSearchBar from '@/components/route/BottomSearchBar'
+import POIQueue from '@/components/route/POIQueue'
+import RouteHealthBar from '@/components/route/RouteHealthBar'
+import { useRouteStore } from '@/lib/store/routeStore'
+import type { POI } from '@gonow/shared-types'
+
+const RouteMap = dynamic(() => import('@/components/route/RouteMap'), { ssr: false })
+
 export default function RoutePage() {
+  const { queue, addPoi, removePoi, reorderQueue } = useRouteStore()
+
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex-1 bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-400">🗺️ 地图区域</p>
+      <div className="flex-1 relative">
+        <POIQueue pois={queue} onRemove={removePoi} onReorder={reorderQueue} />
+        <RouteMap />
       </div>
-      <div className="bg-white px-4 py-3 border-t border-gray-200">
-        <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-3">
-          <span className="text-gray-400 text-sm">🔍</span>
-          <span className="text-gray-400 text-sm">想去哪里？输入景点 / 店名</span>
-        </div>
-      </div>
+      <BottomSearchBar
+        onSelect={(poi) =>
+          addPoi({
+            id: poi.id,
+            name: poi.name,
+            city: '杭州',
+            category: poi.category,
+            rating: poi.rating,
+            lat: poi.lat,
+            lng: poi.lng,
+            address: poi.address,
+            visitDuration: poi.visit_duration,
+            indoor: false,
+            price: poi.price,
+          } as POI)
+        }
+      />
     </div>
   )
 }
