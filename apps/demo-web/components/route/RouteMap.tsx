@@ -118,10 +118,16 @@ export default function RouteMap() {
 
       {/* Loading overlay */}
       {!loaded && !error && (
-        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
-          <div className="text-center">
-            <Loader2 size={28} className="animate-spin text-gray-400 mx-auto mb-3" />
-            <p className="text-sm text-gray-400">地图加载中...</p>
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-gray-50 to-emerald-50" />
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-2xl bg-white shadow-card flex items-center justify-center mx-auto mb-4">
+                <Loader2 size={24} className="animate-spin text-brand-primary/60" />
+              </div>
+              <p className="text-sm text-gray-500 font-medium">正在加载地图</p>
+              <p className="text-xs text-gray-400 mt-1">高德地图 JSAPI v2.0</p>
+            </div>
           </div>
         </div>
       )}

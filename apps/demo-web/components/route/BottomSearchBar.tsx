@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Search, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search, Loader2, MapPin } from 'lucide-react'
 import { api } from '@/lib/api'
 
 interface SearchResult {
@@ -33,13 +34,13 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
   }, [])
 
   return (
-    <div className="bg-white px-4 py-3 border-t border-gray-200">
+    <div className="bg-white/90 backdrop-blur-xl px-4 py-3 border-t border-gray-100">
       <div className="relative">
-        <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2 bg-gray-100/80 rounded-xl px-4 py-3 ring-brand-primary/20 focus-within:ring-2 transition-all">
           {loading ? (
-            <Loader2 size={16} className="animate-spin text-gray-400" />
+            <Loader2 size={16} className="animate-spin text-gray-400 shrink-0" />
           ) : (
-            <Search size={16} className="text-gray-400" />
+            <Search size={16} className="text-gray-400 shrink-0" />
           )}
           <input
             type="text"
@@ -49,23 +50,33 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
             className="bg-transparent outline-none text-sm flex-1 text-gray-700 placeholder-gray-400"
           />
         </div>
-        {results.length > 0 && (
-          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white rounded-xl shadow-lg border border-gray-100 max-h-48 overflow-y-auto">
-            {results.map((poi) => (
-              <button
-                key={poi.id}
-                onClick={() => { onSelect?.(poi); setResults([]); setQuery(poi.name) }}
-                className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-2"
-              >
-                <span className="text-gray-400 text-xs bg-gray-100 px-1.5 py-0.5 rounded">
-                  {poi.category}
-                </span>
-                <span className="text-gray-700">{poi.name}</span>
-                <span className="ml-auto text-xs text-gray-300">{poi.rating}</span>
-              </button>
-            ))}
-          </div>
-        )}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 6, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: 6, height: 0 }}
+              className="absolute bottom-full left-0 right-0 mb-1 bg-white/95 backdrop-blur-xl rounded-xl shadow-float border border-gray-100 max-h-52 overflow-y-auto"
+            >
+              {results.map((poi) => (
+                <motion.button
+                  key={poi.id}
+                  whileTap={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+                  onClick={() => { onSelect?.(poi); setResults([]); setQuery(poi.name) }}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50/80 text-sm flex items-center gap-2.5"
+                >
+                  <MapPin size={12} className="text-brand-primary/40 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-gray-700 truncate block">{poi.name}</span>
+                    <span className="text-[10px] text-gray-400">{poi.category}</span>
+                  </div>
+                  <span className="text-xs text-gray-300">{poi.rating}</span>
+                </motion.button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
