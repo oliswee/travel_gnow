@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="bg-gray-900 flex items-center justify-center min-h-dvh">
+      <body className="bg-gray-900 flex items-center justify-center min-h-[100dvh]">
         {/* Phone frame */}
-        <div className="w-full max-w-md min-h-dvh relative bg-white shadow-2xl overflow-hidden">
+        <div className="w-full max-w-md min-h-[100dvh] bg-white shadow-2xl flex flex-col">
           {/* Status bar */}
-          <div className="h-11 bg-white flex items-center justify-between px-6 text-xs font-medium text-gray-900 sticky top-0 z-[200]">
+          <div className="h-11 bg-white flex items-center justify-between px-6 text-xs font-medium text-gray-900 flex-shrink-0">
             <span>9:41</span>
             <div className="flex items-center gap-1.5">
               <div className="w-3.5 h-3.5 border border-gray-700 rounded-sm" />
@@ -22,8 +22,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="w-6 h-2.5 border border-gray-700 rounded-sm" />
             </div>
           </div>
-          {/* App content */}
-          <div className="relative" style={{ height: 'calc(100dvh - 44px)' }}>
+          {/* App content — fills remaining height */}
+          <div className="flex-1 relative overflow-hidden">
             {children}
           </div>
         </div>

@@ -13,7 +13,7 @@ export default function DriftPage() {
   const { plans, isGenerating, error } = useDriftStore()
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full overflow-y-auto">
       {/* Hero section */}
       <div className="bg-gradient-to-b from-brand-primary/5 via-brand-primary/[0.02] to-transparent px-4 pt-6 pb-2">
         <motion.div

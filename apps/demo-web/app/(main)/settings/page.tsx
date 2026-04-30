@@ -16,7 +16,7 @@ export default function SettingsPage() {
   }, [])
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col p-4 h-full overflow-y-auto">
       <h1 className="text-title font-bold mt-4 mb-6">设置 / Memory Control</h1>
 
       <section className="mb-6">
