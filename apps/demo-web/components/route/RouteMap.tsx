@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouteStore } from '@/lib/store/routeStore'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertTriangle } from 'lucide-react'
 
 const AMAP_JS_KEY = '7085383572277ee2e81e63ed12241888'
 const AMAP_JS_SECRET = '3ec22ddb9bde31f00c36322609d7f2d1'
@@ -16,49 +16,73 @@ export default function RouteMap() {
 
   useEffect(() => {
     let cancelled = false
+    let timeout: ReturnType<typeof setTimeout>
 
     async function initMap() {
       try {
-        // Set security code BEFORE loading the Gaode script (required for JSAPI v2.0)
+        // Gaode JSAPI v2.0 security — must run before script loads
         ;(window as any)._AMapSecurityConfig = {
           securityJsCode: AMAP_JS_SECRET,
         }
 
-        // Use the official Gaode Loader approach
+        console.log('[RouteMap] Loading Gaode script...')
+
+        const script = document.createElement('script')
+        script.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_JS_KEY}`
+
         await new Promise<void>((resolve, reject) => {
-          const script = document.createElement('script')
-          script.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_JS_KEY}`
-          script.onload = () => resolve()
-          script.onerror = () => reject(new Error('Gaode Maps script failed to load'))
+          script.onload = () => {
+            console.log('[RouteMap] Script onload')
+            resolve()
+          }
+          script.onerror = () => reject(new Error('Gaode script load error'))
           document.head.appendChild(script)
+
+          timeout = setTimeout(() => {
+            reject(new Error('地图加载超时。请检查：高德控制台 JS API key 是否启用、安全密钥是否正确、域名白名单是否包含 localhost'))
+          }, 20000)
         })
 
-        if (cancelled || !mapRef.current) return
+        clearTimeout(timeout)
+        if (cancelled) return
 
-        // After loader.js loads, window.AMap is available
-        const AMap = (window as any).AMap
-        if (!AMap) {
-          setError('AMap global not found after loading')
+        // mapRef.current is always available because we render the container div alongside the overlay
+        const el = mapRef.current
+        if (!el) {
+          setError('地图容器未找到')
           return
         }
 
-        const map = new AMap.Map(mapRef.current, {
+        const AMap = (window as any).AMap
+        console.log('[RouteMap] window.AMap:', typeof AMap, typeof AMap?.Map)
+
+        if (!AMap || typeof AMap.Map !== 'function') {
+          setError('高德 JSAPI 加载不完整，key 或安全密钥可能不正确')
+          return
+        }
+
+        const map = new AMap.Map(el, {
           zoom: 12,
           center: [120.155, 30.274],
         })
 
+        console.log('[RouteMap] Map created OK')
         mapInstance.current = map
         setLoaded(true)
       } catch (e: any) {
+        clearTimeout(timeout)
         if (!cancelled) {
-          console.error('Map init error:', e)
+          console.error('[RouteMap] Error:', e)
           setError(e.message || '地图加载失败')
         }
       }
     }
 
     initMap()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      clearTimeout(timeout)
+    }
   }, [])
 
   // Update markers when queue changes
@@ -69,7 +93,6 @@ export default function RouteMap() {
     if (!AMap) return
 
     map.clearMap?.()
-
     if (queue.length === 0) return
 
     queue.forEach((poi, i) => {
@@ -88,32 +111,31 @@ export default function RouteMap() {
     map.setFitView(null, false, [48, 48, 48, 48])
   }, [queue, loaded])
 
-  if (error) {
-    return (
-      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-        <div className="text-center p-4">
-          <p className="text-risk-red text-sm mb-1">地图加载失败</p>
-          <p className="text-xs text-gray-400 break-all">{error}</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!loaded) {
-    return (
-      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 size={24} className="animate-spin text-gray-400 mx-auto mb-2" />
-          <p className="text-xs text-gray-400">加载地图...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div
-      ref={mapRef}
-      className="absolute inset-0"
-    />
+    <div className="absolute inset-0">
+      {/* Map container — always rendered so ref is never null */}
+      <div ref={mapRef} className="absolute inset-0" />
+
+      {/* Loading overlay */}
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+          <div className="text-center">
+            <Loader2 size={28} className="animate-spin text-gray-400 mx-auto mb-3" />
+            <p className="text-sm text-gray-400">地图加载中...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error overlay */}
+      {error && (
+        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+          <div className="text-center p-6 max-w-sm">
+            <AlertTriangle size={28} className="text-amber-500 mx-auto mb-3" />
+            <p className="text-sm text-gray-700 font-medium mb-2">地图加载失败</p>
+            <p className="text-xs text-gray-500 whitespace-pre-line leading-relaxed">{error}</p>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
