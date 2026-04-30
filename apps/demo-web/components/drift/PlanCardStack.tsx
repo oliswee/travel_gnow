@@ -2,78 +2,94 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDriftStore } from '@/lib/store/driftStore'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-const cardColors: Record<string, { bg: string; border: string; badge: string }> = {
-  A: {
-    bg: 'from-blue-50 to-blue-100/50',
-    border: 'border-blue-200',
-    badge: 'bg-blue-500',
-  },
-  B: {
-    bg: 'from-amber-50 to-amber-100/50',
-    border: 'border-amber-200',
-    badge: 'bg-amber-500',
-  },
-  C: {
-    bg: 'from-emerald-50 to-emerald-100/50',
-    border: 'border-emerald-200',
-    badge: 'bg-emerald-500',
-  },
+const cardDefs: Record<string, { gradient: string; border: string; badge: string; dot: string }> = {
+  A: { gradient: 'from-blue-500/10 to-cyan-500/5', border: 'border-blue-200/60', badge: 'bg-blue-500', dot: 'bg-blue-500' },
+  B: { gradient: 'from-amber-500/10 to-orange-500/5', border: 'border-amber-200/60', badge: 'bg-amber-500', dot: 'bg-amber-500' },
+  C: { gradient: 'from-emerald-500/10 to-teal-500/5', border: 'border-emerald-200/60', badge: 'bg-emerald-500', dot: 'bg-emerald-500' },
 }
 
 export default function PlanCardStack() {
   const { plans, activePlanKey, setActivePlan } = useDriftStore()
-
   if (!plans) return null
 
   const keys: ('A' | 'B' | 'C')[] = ['A', 'B', 'C']
+  const activeIdx = keys.indexOf(activePlanKey)
+  const plan = plans[activePlanKey]
+  const def = cardDefs[activePlanKey]
+
+  const goTo = (dir: -1 | 1) => {
+    const next = keys[(activeIdx + dir + 3) % 3]
+    setActivePlan(next)
+  }
 
   return (
-    <div className="relative h-[320px] mb-4">
-      <AnimatePresence>
-        {keys.map((key, i) => {
-          const plan = plans[key]
-          const colors = cardColors[key]
-          const isActive = key === activePlanKey
-          const activeIdx = keys.indexOf(activePlanKey)
+    <div className="mb-4">
+      {/* Main card */}
+      <motion.div
+        key={activePlanKey}
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -40 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+        className={`bg-gradient-to-br ${def.gradient} border ${def.border} rounded-2xl p-5 shadow-card`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className={`${def.badge} text-white text-xs px-2.5 py-1 rounded-full font-medium`}>
+            Plan {activePlanKey}
+          </span>
+          <span className="text-lg font-bold text-gray-800">
+            {plan.preferenceMatch ? `${Math.round(plan.preferenceMatch * 100)}%` : ''}
+          </span>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-1">{plan.label}</h3>
+        <p className="text-sm text-gray-500 leading-relaxed">{plan.description}</p>
+        {plan.uniquePois && plan.uniquePois.length > 0 && (
+          <div className="flex gap-1.5 mt-3 flex-wrap">
+            {plan.uniquePois.slice(0, 5).map((id: string) => (
+              <span key={id} className="text-[10px] bg-white/60 px-2 py-0.5 rounded-full text-gray-500">
+                {id}
+              </span>
+            ))}
+            {plan.uniquePois.length > 5 && (
+              <span className="text-[10px] text-gray-400">+{plan.uniquePois.length - 5}</span>
+            )}
+          </div>
+        )}
+      </motion.div>
 
-          return (
-            <motion.div
+      {/* Nav controls */}
+      <div className="flex items-center justify-between mt-3">
+        <button
+          onClick={() => goTo(-1)}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        {/* Pagination dots */}
+        <div className="flex gap-2">
+          {keys.map((key, i) => (
+            <button
               key={key}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{
-                scale: isActive ? 1 : 0.92,
-                opacity: isActive ? 1 : 0.6,
-                y: isActive ? 0 : 8 + Math.abs(i - activeIdx) * 4,
-                zIndex: isActive ? 10 : 10 - Math.abs(i - activeIdx),
-              }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               onClick={() => setActivePlan(key)}
-              className={`absolute inset-0 bg-gradient-to-br ${colors.bg} border ${colors.border} rounded-xl p-4 cursor-pointer shadow-sm hover:shadow-md transition-shadow`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span
-                  className={`${colors.badge} text-white text-xs px-2 py-0.5 rounded-full`}
-                >
-                  Plan {key}
-                </span>
-                <span className="text-sm font-semibold text-gray-700">
-                  {plan.preferenceMatch
-                    ? `${Math.round(plan.preferenceMatch * 100)}%`
-                    : ''}
-                </span>
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-1">{plan.label}</h3>
-              <p className="text-xs text-gray-500 line-clamp-2">{plan.description}</p>
-              {plan.uniquePois && plan.uniquePois.length > 0 && (
-                <p className="text-xs text-gray-400 mt-2">
-                  特色: {plan.uniquePois.length} 个地点
-                </p>
-              )}
-            </motion.div>
-          )
-        })}
-      </AnimatePresence>
+              className={`transition-all rounded-full ${
+                i === activeIdx
+                  ? `w-6 h-2 ${cardDefs[key].dot}`
+                  : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => goTo(1)}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
     </div>
   )
 }
