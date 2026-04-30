@@ -1,61 +1,79 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import AMapLoader from '@amap/amap-jsapi-loader'
 import { useRouteStore } from '@/lib/store/routeStore'
 import { Loader2 } from 'lucide-react'
 
 const AMAP_JS_KEY = '7085383572277ee2e81e63ed12241888'
 const AMAP_JS_SECRET = '3ec22ddb9bde31f00c36322609d7f2d1'
 
+declare global {
+  interface Window {
+    _AMapSecurityConfig?: {
+      securityJsCode: string
+    }
+    AMap: any
+  }
+}
+
 export default function RouteMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
-  const amapRef = useRef<any>(null)
-  const markersRef = useRef<any[]>([])
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { queue } = useRouteStore()
 
   useEffect(() => {
     let cancelled = false
+
     async function initMap() {
       try {
-        ;(window as any)._AMapSecurityConfig = {
-          securityJsCode: AMAP_JS_SECRET,
-        }
-        const AMap = await AMapLoader.load({
-          key: AMAP_JS_KEY,
-          version: '2.0',
+        // Security config must be set BEFORE loading the script
+        window._AMapSecurityConfig = { securityJsCode: AMAP_JS_SECRET }
+
+        // Load Gaode script manually
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_JS_KEY}`
+          script.onload = () => resolve()
+          script.onerror = () => reject(new Error('Gaode Maps script failed to load'))
+          document.head.appendChild(script)
         })
+
         if (cancelled || !mapRef.current) return
+
+        const AMap = window.AMap
+        if (!AMap) {
+          setError('AMap not available after script load')
+          return
+        }
+
         const map = new AMap.Map(mapRef.current, {
           zoom: 12,
           center: [120.155, 30.274],
           mapStyle: 'amap://styles/light',
         })
-        amapRef.current = AMap
         mapInstance.current = map
         setLoaded(true)
       } catch (e: any) {
         if (!cancelled) {
-          console.error('AMap init error:', e)
+          console.error('Map init error:', e)
           setError(e.message || '地图加载失败')
         }
       }
     }
+
     initMap()
     return () => { cancelled = true }
   }, [])
 
   // Update markers when queue changes
   useEffect(() => {
-    if (!mapInstance.current || !loaded) return
+    if (!mapInstance.current || !loaded || !window.AMap) return
     const map = mapInstance.current
-    const AMap = amapRef.current
+    const AMap = window.AMap
 
-    markersRef.current.forEach((m: any) => map.remove(m))
-    markersRef.current = []
+    map.clearMap?.()
     if (queue.length === 0) return
 
     queue.forEach((poi, i) => {
@@ -69,7 +87,6 @@ export default function RouteMap() {
         },
       })
       map.add(marker)
-      markersRef.current.push(marker)
     })
 
     map.setFitView(null, false, [48, 48, 48, 48])
@@ -78,7 +95,10 @@ export default function RouteMap() {
   if (error) {
     return (
       <div className="flex-1 bg-gray-100 flex items-center justify-center">
-        <p className="text-risk-red text-sm">地图加载失败: {error}</p>
+        <div className="text-center p-4">
+          <p className="text-risk-red text-sm mb-1">地图加载失败</p>
+          <p className="text-xs text-gray-400 break-all">{error}</p>
+        </div>
       </div>
     )
   }
