@@ -18,7 +18,7 @@ export default function TabBar() {
   const activeIndex = tabs.findIndex((t) => pathname.startsWith(t.href))
 
   return (
-    <nav className="relative bg-white/80 backdrop-blur-xl border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2 flex-shrink-0">
+    <nav className="relative glass-heavy border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2 flex-shrink-0">
       {/* Sliding pill background */}
       <motion.div
         className="absolute top-2 h-10 w-20 bg-gradient-to-r from-brand-primary/20 to-brand-primary/10 rounded-xl -translate-x-1/2"

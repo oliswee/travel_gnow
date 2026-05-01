@@ -21,7 +21,7 @@ export default function PreferenceSliders() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-5 space-y-5">
+    <div className="glass-card p-5 space-y-5">
       {Object.entries(weights).map(([name, weight]) => (
         <div key={name}>
           <div className="flex justify-between text-sm mb-1.5">

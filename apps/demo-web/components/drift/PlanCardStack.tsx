@@ -34,7 +34,7 @@ export default function PlanCardStack() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="bg-white rounded-[14px] p-5"
+          className="glass-card rounded-[14px] p-5"
         >
           <div className="flex items-center justify-between mb-3">
             <span className={`${def.badge} text-white text-xs px-2.5 py-1 rounded-full font-medium`}>

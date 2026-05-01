@@ -41,7 +41,7 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
   }, [])
 
   return (
-    <div className="bg-white/90 backdrop-blur-xl px-4 py-3 border-t border-gray-100">
+    <div className="glass-heavy px-4 py-3 border-t border-gray-100">
       {/* Category filter chips */}
       <div className="flex gap-2 mb-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
         {categories.map((cat) => (
@@ -59,7 +59,7 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
         ))}
       </div>
       <div className="relative">
-        <div className="flex items-center gap-2 bg-gray-100/80 rounded-xl px-4 py-3 ring-brand-primary/20 focus-within:ring-2 transition-all">
+        <div className="flex items-center gap-2 bg-white/50 rounded-xl px-4 py-3 ring-brand-primary/20 focus-within:ring-2 transition-all">
           {loading ? (
             <Loader2 size={16} className="animate-spin text-gray-400 shrink-0" />
           ) : (

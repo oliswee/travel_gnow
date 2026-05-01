@@ -21,7 +21,7 @@ export default function RouteHealthBar({ validation }: { validation?: RouteValid
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-card border border-gray-100 px-4 py-2.5"
+      className="glass-card px-4 py-2.5"
     >
       <div className="flex items-center gap-2">
         {failed.length === 0 ? (

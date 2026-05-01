@@ -7,7 +7,7 @@ import { Loader2, AlertTriangle } from 'lucide-react'
 const AMAP_JS_KEY = '7085383572277ee2e81e63ed12241888'
 const AMAP_JS_SECRET = '3ec22ddb9bde31f00c36322609d7f2d1'
 
-export default function RouteMap() {
+export default function RouteMap({ onMarkerClick }: { onMarkerClick?: (poi: any) => void }) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
   const [loaded, setLoaded] = useState(false)
@@ -106,6 +106,10 @@ export default function RouteMap() {
         },
       })
       map.add(marker)
+
+      marker.on('click', () => {
+        onMarkerClick?.(poi)
+      })
     })
 
     map.setFitView(null, false, [48, 48, 48, 48])

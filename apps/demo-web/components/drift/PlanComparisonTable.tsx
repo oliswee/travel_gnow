@@ -30,7 +30,7 @@ export default function PlanComparisonTable() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="bg-white rounded-2xl shadow-card border border-gray-100 p-5 mb-6"
+      className="glass-card p-5 mb-6"
     >
       <h4 className="text-sm font-semibold mb-4 text-gray-700">方案对比</h4>
       {comparison.dimensions.map((dim: any, di: number) => {
