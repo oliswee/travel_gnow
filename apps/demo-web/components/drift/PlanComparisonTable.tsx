@@ -1,9 +1,25 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useDriftStore } from '@/lib/store/driftStore'
 
 const colors = ['#3B5BDB', '#F59F00', '#2FB344']
+
+function Counter({ from, to, duration, format }: { from: number; to: number; duration: number; format: (v: number) => string }) {
+  const [value, setValue] = useState(from)
+  useEffect(() => {
+    let start = Date.now()
+    const id = setInterval(() => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / (duration * 1000), 1)
+      setValue(Math.round(from + (to - from) * progress))
+      if (progress >= 1) clearInterval(id)
+    }, 16)
+    return () => clearInterval(id)
+  }, [from, to, duration])
+  return <span>{format(value)}</span>
+}
 
 export default function PlanComparisonTable() {
   const { comparison } = useDriftStore()
@@ -31,7 +47,12 @@ export default function PlanComparisonTable() {
                       i === dim.best ? 'font-bold text-gray-800' : 'text-gray-400'
                     }`}
                   >
-                    {v > 0 && v < 3 ? `${Math.round(v * 100)}%` : v > 1000 ? `${(v / 1000).toFixed(1)}k` : `${v}`}
+                    <Counter
+                      from={0}
+                      to={v}
+                      duration={0.6}
+                      format={(val) => val > 0 && v > 0 && v < 3 ? `${Math.round(val * 100)}%` : val > 1000 ? `${(val / 1000).toFixed(1)}k` : `${val}`}
+                    />
                   </span>
                 ))}
               </div>
