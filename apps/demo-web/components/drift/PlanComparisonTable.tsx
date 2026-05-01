@@ -52,9 +52,9 @@ export default function PlanComparisonTable() {
                       to={v}
                       duration={0.6}
                       format={(val) => {
-                        if (to > 0 && to < 3) return `${Math.round(val * 100)}%`
-                        if (to > 1000) return `${(val / 1000).toFixed(1)}k`
-                        return `${val}`
+                        if (v > 0 && v < 3) return `${Math.round(val * 100)}%`
+                        if (v > 1000) return `${(val / 1000).toFixed(1)}k`
+                        return `${Math.round(val)}`
                       }}
                     />
                   </span>
