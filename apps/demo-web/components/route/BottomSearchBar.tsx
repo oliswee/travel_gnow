@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Loader2, MapPin } from 'lucide-react'
+import { Search, Loader2, MapPin, Star, Clock, ArrowRight } from 'lucide-react'
 import { api } from '@/lib/api'
 
 interface SearchResult {
@@ -57,21 +57,38 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
               initial={{ opacity: 0, y: 6, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 6, height: 0 }}
-              className="absolute bottom-full left-0 right-0 mb-1 bg-white/95 backdrop-blur-xl rounded-xl shadow-float border border-gray-100 max-h-52 overflow-y-auto"
+              className="absolute bottom-full left-0 right-0 mb-1 bg-white/95 backdrop-blur-xl rounded-2xl shadow-float border border-gray-100 max-h-64 overflow-y-auto"
             >
               {results.map((poi) => (
                 <motion.button
                   key={poi.id}
-                  whileTap={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { onSelect?.(poi); setResults([]); setQuery(poi.name) }}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50/80 text-sm flex items-center gap-2.5"
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50/80 flex items-center gap-3 group"
                 >
-                  <MapPin size={12} className="text-brand-primary/40 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-gray-700 truncate block">{poi.name}</span>
-                    <span className="text-[10px] text-gray-400">{poi.category}</span>
+                  <div className="w-9 h-9 rounded-xl bg-brand-primary/5 flex items-center justify-center shrink-0 group-hover:bg-brand-primary/10 transition-colors">
+                    <MapPin size={14} className="text-brand-primary/60" />
                   </div>
-                  <span className="text-xs text-gray-300">{poi.rating}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-800 font-medium truncate">{poi.name}</span>
+                      <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded shrink-0">{poi.category}</span>
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
+                        <Star size={10} className="text-hype-amber/60" />
+                        {poi.rating}
+                      </span>
+                      <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
+                        <Clock size={10} />
+                        {poi.visit_duration}分
+                      </span>
+                      {poi.price > 0 && (
+                        <span className="text-[10px] text-gray-400">¥{poi.price}</span>
+                      )}
+                    </div>
+                  </div>
+                  <ArrowRight size={14} className="text-gray-300 group-hover:text-brand-primary/50 shrink-0 transition-colors" />
                 </motion.button>
               ))}
             </motion.div>

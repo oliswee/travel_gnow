@@ -21,7 +21,7 @@ export default function TabBar() {
     <nav className="relative bg-white/80 backdrop-blur-xl border-t border-gray-100 z-[100] flex justify-around items-center h-16 pb-2 flex-shrink-0">
       {/* Sliding pill background */}
       <motion.div
-        className="absolute top-2 h-10 w-20 bg-brand-primary/10 rounded-xl -translate-x-1/2"
+        className="absolute top-2 h-10 w-20 bg-gradient-to-r from-brand-primary/20 to-brand-primary/10 rounded-xl -translate-x-1/2"
         animate={{ left: pillPositions[activeIndex] }}
         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       />
