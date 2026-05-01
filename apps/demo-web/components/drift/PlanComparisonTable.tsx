@@ -13,7 +13,7 @@ function Counter({ from, to, duration, format }: { from: number; to: number; dur
     const id = setInterval(() => {
       const elapsed = Date.now() - start
       const progress = Math.min(elapsed / (duration * 1000), 1)
-      setValue(Math.round(from + (to - from) * progress))
+      setValue(from + (to - from) * progress)
       if (progress >= 1) clearInterval(id)
     }, 16)
     return () => clearInterval(id)
@@ -51,7 +51,11 @@ export default function PlanComparisonTable() {
                       from={0}
                       to={v}
                       duration={0.6}
-                      format={(val) => val > 0 && v > 0 && v < 3 ? `${Math.round(val * 100)}%` : val > 1000 ? `${(val / 1000).toFixed(1)}k` : `${val}`}
+                      format={(val) => {
+                        if (to > 0 && to < 3) return `${Math.round(val * 100)}%`
+                        if (to > 1000) return `${(val / 1000).toFixed(1)}k`
+                        return `${val}`
+                      }}
                     />
                   </span>
                 ))}
