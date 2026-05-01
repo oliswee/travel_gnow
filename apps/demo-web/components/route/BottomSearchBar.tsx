@@ -21,6 +21,13 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(false)
+  const categories = ['全部', '景点', '博物馆', '美食', '购物', '茶馆']
+  const [activeCategory, setActiveCategory] = useState('全部')
+
+  // Filter results by category
+  const filteredResults = activeCategory === '全部'
+    ? results
+    : results.filter((r) => r.category === activeCategory || r.category?.includes(activeCategory))
 
   const handleSearch = useCallback(async (q: string) => {
     setQuery(q)
@@ -35,6 +42,22 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
 
   return (
     <div className="bg-white/90 backdrop-blur-xl px-4 py-3 border-t border-gray-100">
+      {/* Category filter chips */}
+      <div className="flex gap-2 mb-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition-all flex-shrink-0 ${
+              activeCategory === cat
+                ? 'bg-brand-primary text-white shadow-sm'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
       <div className="relative">
         <div className="flex items-center gap-2 bg-gray-100/80 rounded-xl px-4 py-3 ring-brand-primary/20 focus-within:ring-2 transition-all">
           {loading ? (
@@ -52,14 +75,14 @@ export default function BottomSearchBar({ onSelect }: { onSelect?: (poi: SearchR
         </div>
 
         <AnimatePresence>
-          {results.length > 0 && (
+          {filteredResults.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 6, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 6, height: 0 }}
               className="absolute bottom-full left-0 right-0 mb-1 bg-white/95 backdrop-blur-xl rounded-2xl shadow-float border border-gray-100 max-h-64 overflow-y-auto"
             >
-              {results.map((poi) => (
+              {filteredResults.map((poi) => (
                 <motion.button
                   key={poi.id}
                   whileTap={{ scale: 0.98 }}
