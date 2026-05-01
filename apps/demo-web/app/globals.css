@@ -34,8 +34,26 @@
     @apply text-risk-red bg-red-50 px-2 py-0.5 rounded text-tag font-medium;
   }
 
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-heavy {
+    background: var(--glass-bg-heavy);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+  }
+
   .glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-card;
+    @apply glass rounded-2xl shadow-card;
+  }
+
+  .glass-card-heavy {
+    @apply glass-heavy rounded-2xl shadow-float;
   }
 
   .skeleton {
