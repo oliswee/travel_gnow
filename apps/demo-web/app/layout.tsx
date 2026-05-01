@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="bg-gray-900 font-sans text-gray-900 antialiased overflow-hidden">
+      <body className="bg-gray-100 font-sans text-gray-900 antialiased overflow-hidden">
         <SplashScreen />
         {/* Centered on desktop, full-width on mobile */}
         <div className="mx-auto max-w-md h-[100dvh] flex flex-col relative shadow-2xl">
