@@ -1,16 +1,55 @@
 'use client'
 
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Compass } from 'lucide-react'
 import DriftInputBar from '@/components/drift/DriftInputBar'
 import { useDriftStore } from '@/lib/store/driftStore'
+import POIInsightDrawer from '@/components/poi/POIInsightDrawer'
+import { api } from '@/lib/api'
 
 const PlanCardStack = dynamic(() => import('@/components/drift/PlanCardStack'), { ssr: false })
 const PlanComparisonTable = dynamic(() => import('@/components/drift/PlanComparisonTable'), { ssr: false })
 
 export default function DriftPage() {
   const { plans, isGenerating, error } = useDriftStore()
+  const [selectedPoi, setSelectedPoi] = useState<any>(null)
+
+  const handlePoiClick = async (poiInfo: { id: string; name: string }) => {
+    try {
+      const data = await api.get<any>(`/api/poi/${poiInfo.id}`)
+      setSelectedPoi({
+        ...poiInfo,
+        id: poiInfo.id,
+        name: poiInfo.name,
+        city: data.city || '杭州',
+        category: data.category || '',
+        rating: data.rating || 0,
+        lat: data.lat || 0,
+        lng: data.lng || 0,
+        address: data.address || '',
+        visitDuration: data.visit_duration ?? 60,
+        indoor: data.indoor ?? false,
+        timeWindow: data.time_window,
+        ugcStats: data.ugc_stats,
+        price: data.price ?? 0,
+      })
+    } catch {
+      setSelectedPoi({
+        id: poiInfo.id,
+        name: poiInfo.name,
+        city: '杭州',
+        category: '',
+        rating: 0,
+        lat: 0,
+        lng: 0,
+        address: '',
+        visitDuration: 60,
+        indoor: false,
+      } as any)
+    }
+  }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
@@ -80,7 +119,7 @@ export default function DriftPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <PlanCardStack />
+              <PlanCardStack onPoiClick={handlePoiClick} />
               <PlanComparisonTable />
             </motion.div>
           )}
@@ -104,6 +143,8 @@ export default function DriftPage() {
           </motion.div>
         )}
       </div>
+
+      <POIInsightDrawer poi={selectedPoi} onClose={() => setSelectedPoi(null)} />
     </div>
   )
 }

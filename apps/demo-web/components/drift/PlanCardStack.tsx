@@ -10,7 +10,7 @@ const cardDefs: Record<string, { ring: string; badge: string; dot: string }> = {
   C: { ring: 'from-emerald-400/40 via-emerald-500/20 to-teal-400/40', badge: 'bg-emerald-500', dot: 'bg-emerald-500' },
 }
 
-export default function PlanCardStack() {
+export default function PlanCardStack({ onPoiClick }: { onPoiClick?: (poi: any) => void }) {
   const { plans, activePlanKey, setActivePlan } = useDriftStore()
   if (!plans) return null
 
@@ -48,13 +48,17 @@ export default function PlanCardStack() {
           <p className="text-sm text-gray-500 leading-relaxed">{plan.description}</p>
           {plan.uniquePois && plan.uniquePois.length > 0 && (
             <div className="flex gap-1.5 mt-3 flex-wrap">
-              {plan.uniquePois.slice(0, 5).map((id: string) => (
-                <span key={id} className="text-[10px] bg-gray-50 px-2 py-0.5 rounded-full text-gray-500 border border-gray-100">
-                  {id}
+              {plan.uniquePois.slice(0, 6).map((item: any) => (
+                <span
+                  key={typeof item === 'string' ? item : item.id}
+                  onClick={() => onPoiClick?.(item)}
+                  className="text-[10px] bg-white/60 px-2 py-0.5 rounded-full text-gray-500 border border-gray-100 cursor-pointer hover:bg-white hover:text-brand-primary transition-colors"
+                >
+                  {typeof item === 'string' ? item : item.name}
                 </span>
               ))}
-              {plan.uniquePois.length > 5 && (
-                <span className="text-[10px] text-gray-400">+{plan.uniquePois.length - 5}</span>
+              {plan.uniquePois.length > 6 && (
+                <span className="text-[10px] text-gray-400">+{plan.uniquePois.length - 6}</span>
               )}
             </div>
           )}

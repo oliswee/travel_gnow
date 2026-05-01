@@ -35,8 +35,10 @@ async def seed_pois():
                     visit_duration=item.get("visit_duration", 60),
                     indoor=item.get("indoor", False),
                     price=item.get("price", 0.0),
+                    time_window=item.get("time_window"),
+                    ugc_stats=item.get("ugc_stats"),
                 )
-                session.add(poi)
+                await session.merge(poi)
                 count += 1
             print(f"Seeded {count} POIs for {city}")
         await session.commit()

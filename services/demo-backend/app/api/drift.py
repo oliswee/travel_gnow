@@ -41,6 +41,13 @@ async def plan_abc(req: DriftRequest):
         "C": strategies.get("poi_ids_c", [p["id"] for p in poi_dicts[8:14]]),
     }
 
+    # Resolve POI names from IDs
+    from app.data.repository import list_pois_by_ids
+    all_assigned_ids = set()
+    for ids in plan_assignments.values():
+        all_assigned_ids.update(ids)
+    poi_map = {p.id: p.name for p in await list_pois_by_ids(list(all_assigned_ids))}
+
     plans = {}
     desc_map = {
         "A": strategies.get("plan_a_description", "最大化偏好匹配"),
@@ -57,7 +64,8 @@ async def plan_abc(req: DriftRequest):
             "description": desc_map[key].replace("_", " "),
             "preference_match": round(0.7 + 0.3 * (3 - (ord(key) - 65)) / 3, 2),
             "diversity_score": round(0.6 + 0.4 * (ord(key) - 65) / 3, 2),
-            "unique_pois": assigned,
+            "unique_pois": [{"id": pid, "name": poi_map.get(pid, pid)} for pid in assigned[:8]],
+            "poi_count": len(assigned),
         }
 
     return {
