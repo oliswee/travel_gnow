@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     # LLM
     gemini_api_key: str = ""
-    gemini_model: str = "models/gemini-2.0-flash"
+    gemini_model: str = "models/gemini-2.5-flash"
 
     # Gaode Maps
     gaode_web_key: str = ""
