@@ -10,6 +10,9 @@ interface RouteState {
   weatherEvent: 'rain' | 'extreme' | null
   isLoading: boolean
   error: string | null
+  generatedPlans: any | null
+  activePlanKey: 'A' | 'B' | 'C'
+  isGenerating: boolean
 
   addPoi: (poi: POI) => void
   removePoi: (poiId: string) => void
@@ -18,6 +21,9 @@ interface RouteState {
   setWeather: (event: 'rain' | 'extreme' | null) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
+  setGeneratedPlans: (plans: any) => void
+  setActivePlanKey: (key: 'A' | 'B' | 'C') => void
+  setGenerating: (v: boolean) => void
   reset: () => void
 }
 
@@ -30,6 +36,9 @@ export const useRouteStore = create<RouteState>((set) => ({
   weatherEvent: null,
   isLoading: false,
   error: null,
+  generatedPlans: null,
+  activePlanKey: 'A',
+  isGenerating: false,
 
   addPoi: (poi) => set((s) => ({ queue: [...s.queue, poi] })),
   removePoi: (poiId) => set((s) => ({ queue: s.queue.filter((p) => p.id !== poiId) })),
@@ -44,6 +53,9 @@ export const useRouteStore = create<RouteState>((set) => ({
   setWeather: (weatherEvent) => set({ weatherEvent }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
+  setGeneratedPlans: (generatedPlans) => set({ generatedPlans }),
+  setActivePlanKey: (activePlanKey) => set({ activePlanKey }),
+  setGenerating: (isGenerating) => set({ isGenerating }),
   reset: () =>
     set({
       queue: [],
